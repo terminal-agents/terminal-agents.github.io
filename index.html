@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Terminal Agents is a collection of tools for coordinating terminal-native AI coding agents."
+    >
+    <title>Terminal Agents</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #17211b;
+        --muted: #53615a;
+        --line: #d8dfd6;
+        --paper: #f7f5ef;
+        --panel: #ffffff;
+        --brand: #16745f;
+        --brand-dark: #0f4f42;
+        --accent: #c44536;
+        --wash: #e8efe7;
+        --shadow: 0 18px 48px rgba(23, 33, 27, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 18px clamp(20px, 5vw, 72px);
+        border-bottom: 1px solid rgba(23, 33, 27, 0.1);
+        background: rgba(247, 245, 239, 0.92);
+        backdrop-filter: blur(16px);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 780;
+        letter-spacing: 0;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 8px;
+        color: #ffffff;
+        background: var(--brand-dark);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 15px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      nav a {
+        text-decoration: none;
+      }
+
+      nav a:hover {
+        color: var(--ink);
+      }
+
+      main {
+        overflow: hidden;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
+        gap: clamp(32px, 6vw, 88px);
+        align-items: center;
+        min-height: calc(100vh - 68px);
+        padding: clamp(54px, 8vw, 112px) clamp(20px, 5vw, 72px) 72px;
+      }
+
+      .eyebrow {
+        margin: 0 0 16px;
+        color: var(--brand-dark);
+        font-size: 13px;
+        font-weight: 760;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 820px;
+        margin-bottom: 22px;
+        font-size: clamp(48px, 8vw, 104px);
+        line-height: 0.92;
+        letter-spacing: 0;
+      }
+
+      .hero-copy {
+        max-width: 650px;
+        margin-bottom: 32px;
+        color: var(--muted);
+        font-size: clamp(18px, 2.2vw, 23px);
+        line-height: 1.5;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-radius: 8px;
+        padding: 0 18px;
+        border: 1px solid var(--ink);
+        font-weight: 720;
+        text-decoration: none;
+      }
+
+      .button.primary {
+        color: #ffffff;
+        border-color: var(--brand-dark);
+        background: var(--brand-dark);
+      }
+
+      .terminal {
+        border: 1px solid #24322b;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #101713;
+        box-shadow: var(--shadow);
+      }
+
+      .terminal-top {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        height: 38px;
+        padding: 0 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: #17211b;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #d95f4b;
+      }
+
+      .dot:nth-child(2) {
+        background: #e3b34f;
+      }
+
+      .dot:nth-child(3) {
+        background: #4aa977;
+      }
+
+      pre {
+        min-height: 360px;
+        margin: 0;
+        padding: clamp(22px, 4vw, 34px);
+        overflow: auto;
+        color: #d7eadf;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+        font-size: clamp(13px, 1.6vw, 15px);
+        line-height: 1.72;
+      }
+
+      .prompt {
+        color: #77d4b0;
+      }
+
+      .comment {
+        color: #8ca89a;
+      }
+
+      .section {
+        padding: 82px clamp(20px, 5vw, 72px);
+        border-top: 1px solid rgba(23, 33, 27, 0.1);
+      }
+
+      .section-header {
+        display: grid;
+        grid-template-columns: minmax(0, 0.7fr) minmax(280px, 0.3fr);
+        gap: 32px;
+        align-items: end;
+        margin-bottom: 34px;
+      }
+
+      h2 {
+        max-width: 780px;
+        margin-bottom: 0;
+        font-size: clamp(34px, 5vw, 64px);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .section-lede {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .tool-card {
+        min-height: 280px;
+        padding: 28px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .tool-card h3 {
+        margin-bottom: 14px;
+        font-size: 28px;
+      }
+
+      .tool-card p {
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .tool-card ul {
+        display: grid;
+        gap: 10px;
+        margin: 22px 0 0;
+        padding: 0;
+        list-style: none;
+        color: var(--ink);
+      }
+
+      .tool-card li {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .tool-card li::before {
+        content: ">";
+        color: var(--accent);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-weight: 800;
+      }
+
+      .principles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .principle {
+        padding: 24px;
+        border-left: 3px solid var(--brand);
+        background: var(--wash);
+      }
+
+      .principle h3 {
+        margin-bottom: 10px;
+        font-size: 20px;
+      }
+
+      .principle p {
+        margin-bottom: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .cta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 28px;
+        padding: 42px;
+        border-radius: 8px;
+        color: #ffffff;
+        background: var(--brand-dark);
+      }
+
+      .cta h2 {
+        max-width: 720px;
+        font-size: clamp(32px, 4.8vw, 58px);
+      }
+
+      .cta p {
+        max-width: 640px;
+        margin-bottom: 0;
+        color: rgba(255, 255, 255, 0.78);
+        line-height: 1.6;
+      }
+
+      .cta .button {
+        flex: 0 0 auto;
+        color: var(--brand-dark);
+        border-color: #ffffff;
+        background: #ffffff;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 28px clamp(20px, 5vw, 72px);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 860px) {
+        .site-header,
+        nav,
+        footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .section-header,
+        .tool-grid,
+        .principles {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          min-height: auto;
+          padding-top: 46px;
+        }
+
+        pre {
+          min-height: 260px;
+        }
+
+        .cta {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Terminal Agents home">
+        <span class="brand-mark">$</span>
+        <span>Terminal Agents</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#tools">Tools</a>
+        <a href="#principles">Principles</a>
+        <a href="https://github.com/terminal-agents">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow">Terminal-native agent tooling</p>
+          <h1 id="hero-title">Terminal Agents</h1>
+          <p class="hero-copy">
+            A focused toolkit for understanding, coordinating, and improving
+            AI coding agents that work where developers already live: the
+            terminal.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/terminal-agents">
+              View on GitHub
+            </a>
+            <a class="button" href="#tools">Explore tools</a>
+          </div>
+        </div>
+
+        <div class="terminal" aria-label="Terminal Agents command preview">
+          <div class="terminal-top" aria-hidden="true">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <pre><code><span class="prompt">$</span> terminal-agents usage summarize
+agent        sessions   tokens    trend
+codex        128        4.8M      rising
+claude       64         2.1M      steady
+
+<span class="prompt">$</span> terminal-agents workboard open
+workspace    /repos/product
+threads      7 active
+handoffs     3 ready
+
+<span class="comment"># See the work. Keep the context. Ship with less drift.</span></code></pre>
+        </div>
+      </section>
+
+      <section id="tools" class="section" aria-labelledby="tools-title">
+        <div class="section-header">
+          <h2 id="tools-title">Tools for agent-heavy development</h2>
+          <p class="section-lede">
+            Terminal Agents collects small, composable utilities that make
+            terminal coding agents easier to observe and coordinate across real
+            projects.
+          </p>
+        </div>
+
+        <div class="tool-grid">
+          <article class="tool-card">
+            <h3>terminal-agents-usage</h3>
+            <p>
+              Understand how agent sessions consume time, tokens, and attention
+              across your local workflows.
+            </p>
+            <ul>
+              <li>Summarize usage by agent, workspace, or time period</li>
+              <li>Spot noisy sessions and expensive loops</li>
+              <li>Turn raw logs into readable operational signals</li>
+            </ul>
+          </article>
+
+          <article class="tool-card">
+            <h3>terminal-agents-workboard</h3>
+            <p>
+              Keep multi-agent work visible, organized, and easier to resume
+              when context moves between threads.
+            </p>
+            <ul>
+              <li>Track active work across local repositories</li>
+              <li>Surface handoffs, blockers, and next actions</li>
+              <li>Give terminal workflows a shared operating picture</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="principles" class="section" aria-labelledby="principles-title">
+        <div class="section-header">
+          <h2 id="principles-title">Built around practical coordination</h2>
+          <p class="section-lede">
+            The project is intentionally boring in the best way: transparent
+            files, terminal-first interfaces, and outputs that are useful to
+            both people and agents.
+          </p>
+        </div>
+
+        <div class="principles">
+          <article class="principle">
+            <h3>Observable</h3>
+            <p>
+              Make agent work inspectable instead of mysterious, with summaries
+              that explain what happened and what changed.
+            </p>
+          </article>
+          <article class="principle">
+            <h3>Composable</h3>
+            <p>
+              Prefer small tools that fit shell workflows, scripts, local repos,
+              and existing developer habits.
+            </p>
+          </article>
+          <article class="principle">
+            <h3>Portable</h3>
+            <p>
+              Keep the useful state close to the workspace so projects remain
+              understandable after a session ends.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="start-title">
+        <div class="cta">
+          <div>
+            <h2 id="start-title">A cleaner control surface for terminal agents.</h2>
+            <p>
+              Follow the organization for early tools, experiments, and working
+              patterns for agent-assisted software development.
+            </p>
+          </div>
+          <a class="button" href="https://github.com/terminal-agents">Open GitHub</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Terminal Agents</span>
+      <span>Tools for terminal-native AI coding workflows.</span>
+    </footer>
+  </body>
+</html>
