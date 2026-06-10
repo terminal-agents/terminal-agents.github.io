@@ -7,6 +7,7 @@
       name="description"
       content="Terminal Agents is a collection of tools for coordinating terminal-native AI coding agents."
     >
+    <link rel="icon" type="image/png" href="assets/favicon.png">
     <title>Terminal Agents</title>
     <style>
       :root {
@@ -64,15 +65,11 @@
       }
 
       .brand-mark {
-        display: grid;
-        width: 30px;
-        height: 30px;
-        place-items: center;
+        display: block;
+        width: 32px;
+        height: 32px;
         border-radius: 8px;
-        color: #ffffff;
-        background: var(--brand-dark);
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 15px;
+        object-fit: cover;
       }
 
       nav {
@@ -384,7 +381,7 @@
   <body>
     <header class="site-header">
       <a class="brand" href="#top" aria-label="Terminal Agents home">
-        <span class="brand-mark">$</span>
+        <img class="brand-mark" src="assets/logo-square.png" alt="">
         <span>Terminal Agents</span>
       </a>
       <nav aria-label="Primary navigation">
